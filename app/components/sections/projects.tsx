@@ -1,8 +1,85 @@
 "use client";
 
-import { motion } from "motion/react";
+import { useRef } from "react";
+
+import { motion, useScroll, useTransform } from "motion/react";
 
 import SectionHeader from "../ui/sectionHeader";
+
+const featuredProjects = [
+  {
+    label: "featured project 01",
+    title: "trophy build one",
+    desc: "lorem ipsum dolor sit amet, consectetur adipiscing elit. integer posuere, sem at blandit aliquet, mauris lorem dapibus velit, non facilisis arcu metus vel nibh.",
+  },
+  {
+    label: "featured project 02",
+    title: "trophy build two",
+    desc: "sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore.",
+  },
+  {
+    label: "featured project 03",
+    title: "trophy build three",
+    desc: "quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas.",
+  },
+];
+
+const FeaturedProject = ({
+  label,
+  title,
+  desc,
+}: {
+  label: string;
+  title: string;
+  desc: string;
+}) => {
+  const projectRef = useRef<HTMLDivElement | null>(null);
+  const { scrollYProgress } = useScroll({
+    target: projectRef,
+    offset: ["start end", "end start"],
+  });
+
+  const textY = useTransform(scrollYProgress, [0, 0.5, 1], [-500, 0, 500]);
+  const textOpacity = useTransform(
+    scrollYProgress,
+    [0, 0.25, 0.5, 0.75, 1],
+    [0, 0.5, 1, 0.5, 0],
+  );
+
+  const imageY = useTransform(scrollYProgress, [0, 0.5, 1], [500, 0, -500]);
+  const imageOpacity = useTransform(
+    scrollYProgress,
+    [0, 0.25, 0.5, 0.75, 1],
+    [0, 0.5, 1, 0.5, 0],
+  );
+
+  return (
+    <div ref={projectRef} className="relative h-[145vh] sm:h-[130vh]">
+      <div className="sticky top-20 h-150 grid grid-cols-1 gap-x-8 items-center lg:grid-cols-2 bg-red-300">
+        <motion.div
+          style={{ y: textY, opacity: textOpacity }}
+          className="max-w-xl"
+        >
+          <p className="text-xs tracking-[0.24em] uppercase text-neutral-500">
+            {label}
+          </p>
+
+          <h3 className="mt-3 text-3xl sm:text-4xl font-semibold leading-tight">
+            {title}
+          </h3>
+
+          <p className="mt-4 text-neutral-600 dark:text-neutral-300 text-lg leading-relaxed">
+            {desc}
+          </p>
+        </motion.div>
+
+        <motion.div style={{ y: imageY, opacity: imageOpacity }}>
+          <div className="ml-auto w-full max-w-xl h-80 sm:h-96 rounded-2xl border border-neutral-300 dark:border-neutral-700 bg-black" />
+        </motion.div>
+      </div>
+    </div>
+  );
+};
 
 const projects = [
   {
@@ -104,6 +181,17 @@ const Projects = () => {
   return (
     <section id="projects">
       <SectionHeader emoji="💻" title="projects" />
+
+      <div>
+        {featuredProjects.map((project) => (
+          <FeaturedProject
+            key={project.label}
+            label={project.label}
+            title={project.title}
+            desc={project.desc}
+          />
+        ))}
+      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
         {projects.map((mp, i) => (
